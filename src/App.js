@@ -63,7 +63,7 @@ class App {
     let holidayLastIndex=0;
 
     while (true) {
-      const weekend =this.#workDate.day === "토"|this.#workDate.day === "일";
+      const weekend =this.#workDate.day === "토"||this.#workDate.day === "일";
       if(weekend){
         const indexOf =DAYS.indexOf(this.#workDate.day);
         workers.push(holiday[0]);
@@ -75,9 +75,10 @@ class App {
         const weekdayWorkers = this.#getArray(weekdayLastIndex? weekdayLastIndex+1: weekdayLastIndex,5, weekday);
 
         workers = workers.concat(weekdayWorkers.array);
-        weekdayLastIndex = weekdayWorkers.lastIndex
-  
-        const holidayWorkers =this.#getArray(holidayLastIndex ? holidayLastIndex+1: holidayLastIndex ,2,holiday);
+        weekdayLastIndex = weekdayWorkers.lastIndex;
+        const next = weekend && !holidayLastIndex ? 1: holidayLastIndex +1;
+
+        const holidayWorkers =this.#getArray(next ,2,holiday);
      
         workers = workers.concat(holidayWorkers.array);
         holidayLastIndex = holidayWorkers.lastIndex;
