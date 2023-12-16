@@ -25,78 +25,54 @@ class App {
   async #getWorker(){
     this.#worker = await InputController.getWorker();
   }
-  #getArray(start, number, array){
-    const length = array.length;
-    const last =  start + number -1 ;
-    const isOver =last >= length;
-    const lastIndex= isOver? number - (length  - start) -1 : last ;
-    
-    const newArray = isOver?   [...array].slice(start).concat([...array].slice(0, lastIndex +1 )) : [...array].slice(start, last+1)
-    return {
-      array:newArray,
-      lastIndex:lastIndex
-    } 
-  }
-  #changeIndex(workers ,totalDays){
+
+  #changeIndex(workers){
     // 순서 교환
-    let array =[];
-    for (let i=0; array.length < totalDays; 
-      i++) {
-      const index = i;
-      const worker = workers[index] ;
-      const previous =array[index-1];
-      const isDuplicate = previous  ? previous === worker :false;
-      !isDuplicate?
-        array.push(worker):
-      array.concat([workers[index+1], worker]);
+    workers.forEach( (worker, index) => {
+      const previous = workers[index-1];
+      if(previous === worker) {
+        workers.splice(index,1); workers.splice(index+1,0,worker)};
+    });
 
-      if(isDuplicate) i +=1;
+  return workers;
 
-    }
-    return array
   }
-  #getWorkerArray(totalDays){
-    const {weekday , holiday} = this.#worker;
+  #getWorkerArray(){
+    const {weekday, holiday} = this.#worker;
+    const {day} = this.#workDate;
+    const isWeekend = ["토","일"].includes(day);
+    const workers ={
+      weekday:Array.from({length:31},(v,index)=> weekday[index % weekday.length]),
+      holiday:Array.from({length:15},(v,index)=> holiday[index % holiday.length]),
+    };
+    let startIndex= {
+      weekday:0,
+      holiday:0
+    };
+    let array=[];
 
-    let workers =[];
-    let weekdayLastIndex=0;
-    let holidayLastIndex=0;
-
-    while (true) {
-      const weekend =this.#workDate.day === "토"||this.#workDate.day === "일";
-      if(weekend){
-        const indexOf =DAYS.indexOf(this.#workDate.day);
-        workers.push(holiday[0]);
-        holidayLastIndex =0;
-        if(indexOf ) workers.push(holiday[1]);
-        holidayLastIndex =1;
-      };
-      
-        const weekdayWorkers = this.#getArray(weekdayLastIndex? weekdayLastIndex+1: weekdayLastIndex,5, weekday);
-
-        workers = workers.concat(weekdayWorkers.array);
-        weekdayLastIndex = weekdayWorkers.lastIndex;
-        const next = weekend && !holidayLastIndex ? 1: holidayLastIndex +1;
-
-        const holidayWorkers =this.#getArray(next ,2,holiday);
-     
-        workers = workers.concat(holidayWorkers.array);
-        holidayLastIndex = holidayWorkers.lastIndex;
-      
-      if(workers.length >= totalDays+ 8
-        ) break;
+    if(isWeekend) {
+      const index = day ==="토"? 1: 0
+      array = workers.holiday.slice(0, index +1 ); 
+      startIndex.holiday = index  + 1;
     };
 
-    return workers
-    //[...workers].slice(DAYS.indexOf(this.#workDate.day))
+    while(array.length <=32 ){
+      array = array.concat(workers.weekday.slice(startIndex.weekday, startIndex.weekday+5));
+      array= array.concat(workers.holiday.slice(startIndex.holiday, startIndex.holiday +2));
+      startIndex.weekday +=  5;
+      startIndex.holiday += + 2 ;
+
+    };
+    return array;
   }
   #setSchedule(){
     const {month,day} = this.#workDate;
     const totalDays = month===2 ? 28: MONTH.thirty.includes(month)? 30 :31;
-    const workers = this.#changeIndex (this.#getWorkerArray(totalDays),totalDays);
+    const workers = this.#changeIndex (this.#getWorkerArray()).slice(0, totalDays+1);
     const indexOfDay = DAYS.indexOf(day);
-    const week = indexOfDay ? [...DAYS].slice(indexOfDay).concat([...DAYS].slice(0,indexOfDay)) :DAYS;
-  
+    const week = indexOfDay ? DAYS.slice(indexOfDay).concat(DAYS.slice(0, indexOfDay)) : DAYS;
+
     const schedule = workers.map((worker,index)=>{
       const date = `${month<10? `0${month}`:month}${index<10? `0${index}`:index}`;
       const isPublicHoliday = RULE.holidays.includes(date);
