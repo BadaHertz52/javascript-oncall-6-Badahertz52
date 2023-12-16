@@ -29,7 +29,6 @@ const InputController = {
         : string.includes(SEPARATOR) &&
           names.length - 1 ===
             [...string].filter((v) => v === SEPARATOR).length;
-    console.log(isSeparator, names.length);
     const isValidatedName = names.every((v) => REG_EXP.name.test(v));
 
     const isNotDuplicate = names.length === new Set(names).size;
