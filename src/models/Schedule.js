@@ -1,7 +1,13 @@
 import { getLastDate } from '../utils';
 
 class Schedule {
+  /**
+   *  @type {weekday:string[], holiday:string[]}
+   * */
   #expandedWorkers;
+  /**
+   * @type {{month: number;day: string;date: number;isWeekend: boolean;isPublicHoliday;boolean;worker: string;}[]}
+   */
   #schedule;
   /**
    * @param {{month: number,day: string,date: number,isWeekend: boolean, isPublicHoliday: boolean}[]} calendar
