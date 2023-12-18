@@ -3,15 +3,8 @@ import { DAYS, REG_EXP, RULE, SEPARATOR, WEEKEND } from '../constants/index.js';
 import { getLastDate, getNewWeek } from '../utils/index.js';
 
 class Calendar {
-  #calendar = [
-    {
-      month: undefined,
-      day: undefined,
-      date: undefined,
-      isWeekend: undefined,
-      isPublicHoliday: undefined,
-    },
-  ];
+  /**@type {{month: number;day: string;date: number;isWeekend: boolean;isPublicHoliday: boolean}[]|undefined} */
+  #calendar;
 
   constructor(string) {
     this.#validateWorkDate(string);
@@ -30,12 +23,17 @@ class Calendar {
   #changeToTwoDigits(number) {
     return number < 10 ? `0${number}` : `${number}`;
   }
-
+  /**
+   * @param {number} month
+   * @param {number} date
+   * @returns
+   */
   #changeFormat(month, date) {
     return `${this.#changeToTwoDigits(month)}${this.#changeToTwoDigits(date)}`;
   }
   /**
    * @param {number} lastDate
+   * @param {('월' | '화' | '수' | '목' | '금' | '토' | '일')[]} week
    * @param {number} month
    */
   #makeCalendar(lastDate, week, month) {
@@ -58,10 +56,10 @@ class Calendar {
 
   #setState(string) {
     const [month, day] = string.split(SEPARATOR);
-    const lastDate = getLastDate(month);
+    const lastDate = getLastDate(Number(month));
     const week = getNewWeek(day);
 
-    this.#calendar = this.#makeCalendar(lastDate, week, month);
+    this.#calendar = this.#makeCalendar(lastDate, week, Number(month));
   }
 
   getState() {

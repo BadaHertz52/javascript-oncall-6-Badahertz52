@@ -4,7 +4,7 @@ class Schedule {
   #expandedWorkers;
   #schedule;
   /**
-   * @param {{month: string,day: string,date: number|string,isWeekend: boolean, isPublicHoliday: boolean}[]} calendar
+   * @param {{month: number,day: string,date: number,isWeekend: boolean, isPublicHoliday: boolean}[]} calendar
    * @param {{weekday: string[],holiday:string[]}} workers
    */
   constructor(calendar, workers) {
@@ -29,7 +29,7 @@ class Schedule {
 
   /**
    * 앞의 근무자와 연속된 근무자일 경우, 뒤의 근무자와 순서를 변경
-   * @param {{month: string;day: string;date: number | string;isWeekend: boolean;isPublicHoliday: boolean; worker: string;}[]} array
+   * @param {{month: number ;day: string;date: number;isWeekend: boolean;isPublicHoliday: boolean; worker: string;}[]} array
    * @returns
    */
   #checkContinuousWork(array) {
@@ -49,7 +49,7 @@ class Schedule {
     return array;
   }
   /**
-   * @param{{month: string,day: string,date: number|string,isWeekend: boolean, isPublicHoliday: boolean}[]} calendar
+   * @param  {{month: number;day: string;date: number;isWeekend: boolean;isPublicHoliday: boolean}[]} calendar
    */
   #setSchedule(calendar) {
     const month = calendar[0].month;
