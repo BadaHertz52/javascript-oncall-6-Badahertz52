@@ -26,67 +26,66 @@ class App {
     this.#worker = await InputController.getWorker();
   }
 
-  #changeIndex(workers){
-    // 순서 교환
-    workers.forEach( (worker, index) => {
-      const previous = workers[index-1];
-      if(previous === worker) {
-        workers.splice(index,1); workers.splice(index+1,0,worker)};
-    });
+  #getDays(){
+    const {month, day} = this.#workDate;
+    const numberOfDays = month === 2? 28: MONTH.thirty.includes(month)? 30 :31;
+    const indexOfDay =DAYS.indexOf(day);
+    const week = indexOfDay ? DAYS.slice(indexOfDay).concat(DAYS.slice(0, indexOfDay)) : DAYS;
 
-  return workers;
-
-  }
-  #getWorkerArray(){
+    return  Array.from({length:numberOfDays +1 },(v,index)=>{
+      const date = `${month<10? `0${month}`:month}${index+1<10? `0${index+1}`:index+1}`;
+      const isPublicHoliday = RULE.holidays.includes(date);
+      const day =week[Math.floor(index % 7)]
+      return {
+      isPublicHoliday : isPublicHoliday,
+      day:day,
+      date:index+1
+    }});
+  };
+  #getSchedule(){
+    const days = this.#getDays();
     const {weekday, holiday} = this.#worker;
-    const {day} = this.#workDate;
-    const isWeekend = ["토","일"].includes(day);
     const workers ={
       weekday:Array.from({length:31},(v,index)=> weekday[index % weekday.length]),
       holiday:Array.from({length:15},(v,index)=> holiday[index % holiday.length]),
     };
-    let startIndex= {
-      weekday:0,
-      holiday:0
-    };
-    let array=[];
 
-    if(isWeekend) {
-      const index = day ==="토"? 1: 0
-      array = workers.holiday.slice(0, index +1 ); 
-      startIndex.holiday = index  + 1;
-    };
-
-    while(array.length <=32 ){
-      array = array.concat(workers.weekday.slice(startIndex.weekday, startIndex.weekday+5));
-      array= array.concat(workers.holiday.slice(startIndex.holiday, startIndex.holiday +2));
-      startIndex.weekday +=  5;
-      startIndex.holiday += + 2 ;
-
-    };
-    return array;
+    return days.map((v)=>{
+      const isHoliday =["토","일"].includes(v.day) || v.isPublicHoliday;
+      let worker;
+      isHoliday ?
+        worker =workers.holiday.shift():
+        worker = workers.weekday.shift();
+      
+      return {
+        ...v,
+        worker:worker
+      }
+    })
+  };
+  #checkDuplicate(schedule){
+    //const schedule = this.#getSchedule();
+    schedule.forEach((v,index)=>{
+      const previous =schedule[index -1];
+      const next = schedule[index + 1];
+      const isDuplicated = previous?.worker === v.worker;
+      if(isDuplicated){
+        const newItem ={...v, worker:next.worker};
+        const newNext = {...next, worker:v.worker }
+        schedule.splice(index,1, newItem);
+        schedule.splice(index+1,1, newNext)
+      }
+    })
+    return schedule;
   }
   #setSchedule(){
-    const {month,day} = this.#workDate;
-    const totalDays = month===2 ? 28: MONTH.thirty.includes(month)? 30 :31;
-    const workers = this.#changeIndex (this.#getWorkerArray()).slice(0, totalDays+1);
-    const indexOfDay = DAYS.indexOf(day);
-    const week = indexOfDay ? DAYS.slice(indexOfDay).concat(DAYS.slice(0, indexOfDay)) : DAYS;
-
-    const schedule = workers.map((worker,index)=>{
-      const date = `${month<10? `0${month}`:month}${index<10? `0${index}`:index}`;
-      const isPublicHoliday = RULE.holidays.includes(date);
-
-      return {
-        name:worker,
-        date :`${month}월 ${index+1}일 ${week[Math.floor(index % 7)]}${isPublicHoliday?'(휴일)':''}`
-      }
-    });
-    this.#schedule = schedule;
-  };
+    const array = this.#getSchedule();
+    this.#schedule = this.#checkDuplicate(array);
+  }
   #print(){
-    this.#schedule.map((v)=>{
-      OutputView.print(`${v.date} ${v.name}`)
+    this.#schedule.map((v,index)=>{
+      const date=`${this.#workDate.month}월 ${v.date}일 ${v.day}${v.isPublicHoliday&& !["토","일"].includes(v.day)?"(휴일)":""}`
+      OutputView.print(`${date} ${v.worker}`)
     })
   }
 }
