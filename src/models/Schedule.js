@@ -1,4 +1,4 @@
-import { getLastDate } from '../utils';
+import { getLastDate } from '../utils/index.js';
 
 class Schedule {
   /**

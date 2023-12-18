@@ -31,6 +31,7 @@ class App {
   }
   
   #print(){
+    OutputView.print('');
     this.#schedule.map((v)=>{
       const {month, date, day, isPublicHoliday, isWeekend , worker} =v;
       const dateMessage=`${month}월 ${date}일 ${day}${isPublicHoliday && !isWeekend? PUBLIC_HOLIDAY:""}`

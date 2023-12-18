@@ -12,7 +12,7 @@ const InputController = {
         result = new Calendar(value).getState();
       } catch (error) {
         const { message } = error;
-        OutputView.print(message);
+        OutputView.print(`\n${message}`);
       }
     }
 
