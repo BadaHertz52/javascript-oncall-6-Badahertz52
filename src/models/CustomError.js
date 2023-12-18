@@ -1,4 +1,4 @@
-import { ERROR_MESSAGE } from './constants/index.js';
+import { ERROR_MESSAGE } from '../constants/index.js';
 
 class CustomError extends Error {
   constructor() {

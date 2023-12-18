@@ -1,4 +1,4 @@
-import CustomError from '../CustomError.js';
+import CustomError from './CustomError.js';
 import { DAYS, REG_EXP, RULE, SEPARATOR, WEEKEND } from '../constants/index.js';
 import { getLastDate, getNewWeek } from '../utils/index.js';
 

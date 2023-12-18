@@ -1,4 +1,4 @@
-import CustomError from '../CustomError.js';
+import CustomError from './CustomError.js';
 import { NUMBER_OF_WORKER, REG_EXP, SEPARATOR } from '../constants/index.js';
 
 class Workers {
