@@ -17,10 +17,10 @@ class Workers {
   //validate
   #isSeparator(string) {
     const length = this.#names.length;
-    return length === 1
-      ? true
-      : string.includes(SEPARATOR) &&
-          length - 1 === [...string].filter((v) => v === SEPARATOR).length;
+    return (
+      string.includes(SEPARATOR) &&
+      length - 1 === [...string].filter((v) => v === SEPARATOR).length
+    );
   }
 
   #isValidatedName() {
