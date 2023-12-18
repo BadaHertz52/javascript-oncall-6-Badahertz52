@@ -10,12 +10,18 @@ export const RULE = Object.freeze({
     '1225',
   ]),
 });
-export const DAYS = Object.freeze(['월', '화', '수', '목', '금', '토', '일']);
+
+export const WEEKEND = Object.freeze(['토', '일']);
+
+export const DAYS = Object.freeze(['월', '화', '수', '목', '금', ...WEEKEND]);
+
 export const SEPARATOR = Object.freeze(',');
+
 export const REG_EXP = Object.freeze({
   workDate: new RegExp('^([1-9]|[1][0-2]),[가-힣]$'),
   name: new RegExp('^[a-zA-z가-힣]{1,5}$'),
 });
+
 export const NUMBER_OF_WORKER = Object.freeze({
   min: 5,
   max: 35,
